@@ -9,20 +9,9 @@ import {
     TouchableOpacity,
     TouchableHighlight
 } from 'react-native';
-import 'aws-sdk';
-import * as AWS from "aws-sdk";
-
-AWS.config.update({
-    region:'us-east-1'
-});
-
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: "us-east-1:b66fdc9b-bf70-4a84-bfc4-45aa94384960",
-    AccessKeyId: 'AKIAIG7XIOTEYC3O7FIA',
-    SecretKey: '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'
-});
-
-let docClient = new AWS.DynamoDB.DocumentClient();
+import Amplify, { API } from 'aws-amplify';
+import aws_exports from '../../aws-exports';
+Amplify.configure(aws_exports);
 
 export default class Login extends Component {
 
@@ -31,7 +20,8 @@ export default class Login extends Component {
         this.state = {
             signInPhone: '',
             signInPassword: '',
-            signInName: '',
+            signInfirstName: '',
+            signInlastName: '',
             phase: 'login',
         }
     }
@@ -44,8 +34,12 @@ export default class Login extends Component {
         this.setState({signInPassword: event})
     };
 
-    onNameChange = (event) => {
-        this.setState({signInName: event})
+    onfirstNameChange = (event) => {
+        this.setState({signInfirstName: event})
+    };
+
+    onlastNameChange = (event) => {
+        this.setState({signInlastName: event})
     };
 
     onLoginClick = (event) => {
@@ -56,49 +50,39 @@ export default class Login extends Component {
         this.setState({phase: 'register'})
     };
 
-    onSubmitSignIn = () => {
-        // fetch(`${deploy}/signin`, {
-        //     method: 'post',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         email: this.state.signInPhone,
-        //         password: this.state.signInPassword,
-        //     })
-        // })
-        //     .then(response => response.json())
-        //     .then(user => {
-        //         if(user.id){
-        //             this.props.loadUser(user);
-        //             this.props.onRouteChange('home')
-        //         }
-        //     });
-
-        let params = {
-            TableName : "reactApp",
-            ProjectionExpression:"phoneNumber",
-            KeyConditionExpression: "phoneNumber = :yyyy",
-            ExpressionAttributeValues: {
-                ":yyyy":this.state.signInPhone,
-            }
-        };
-
-        docClient.query(params, function(err, data) {
-            if (err) {
-                console.log("Unable to query. Error:", JSON.stringify(err, null, 2));
-            } else {
-                console.log("Query succeeded.");
-                data.Items.forEach(function(item) {
-                    console.log(item.firstName + " " + item.lastName);
-                });
-            }
-        });
+    onSubmitSignIn = async () => {
+        const path = "/user/object/" + this.state.signInPhone;
+        try {
+            const apiResponse = await API.get("userCRUD", path);
+            if(apiResponse.password === this.state.signInPassword)
+                this.props.navigation.navigate('Camera');
+            console.log("response from getting note: " + apiResponse);
+            this.setState({apiResponse});
+        } catch (e) {
+            console.log(e);
+        }
 
     };
 
-    onSubmitRegister = () => {
+    onSubmitRegister = async () => {
+        let newAccount = {
+            body: {
+                "phoneNumber": this.state.signInPhone,
+                "firstName": this.state.signInfirstName,
+                "lastName": this.state.signInlastName,
+                "password": this.state.signInPassword
+            }
+        };
+        const path = "/user";
 
+        // Use the API module to save the note to the database
+        try {
+            const apiResponse = await API.put("userCRUD", path, newAccount);
+            console.log("response from saving note: " + apiResponse);
+            this.props.navigation.navigate('Camera')
+        } catch (e) {
+            console.log(e);
+        }
     };
 
     render() {
@@ -108,8 +92,15 @@ export default class Login extends Component {
                     <Text style={styles.title}>CitrusHack</Text>
 
                     {this.state.phase === 'register' ? <TextInput style={styles.input}
-                                                                  placeholder='Name'
-                                                                  onChangeText={this.onNameChange}
+                                                                  placeholder='First Name'
+                                                                  onChangeText={this.onfirstNameChange}
+                                                                  underlineColorAndroid='transparent'
+                    /> : ""
+                    }
+
+                    {this.state.phase === 'register' ? <TextInput style={styles.input}
+                                                                  placeholder='Last Name'
+                                                                  onChangeText={this.onlastNameChange}
                                                                   underlineColorAndroid='transparent'
                     /> : ""
                     }
@@ -123,6 +114,7 @@ export default class Login extends Component {
                     <TextInput
                         style={styles.input}
                         placeholder='Password'
+                        secureTextEntry={true}
                         onChangeText={this.onPasswordChange}
                     />
                     { this.state.phase === 'login' ?

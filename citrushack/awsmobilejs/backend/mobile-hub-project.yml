@@ -1,0 +1,64 @@
+--- !com.amazonaws.mobilehub.v0.Project 
+features:
+  cloudlogic: !com.amazonaws.mobilehub.v0.CloudLogic 
+    components:
+      userCRUD: !com.amazonaws.mobilehub.v0.API 
+        attributes:
+          name: userCRUD
+          requires-signin: false
+          sdk-generation-stage-name: Development
+        paths:
+          /user: !com.amazonaws.mobilehub.v0.Function 
+            codeFilename: uploads/user-20180421205750.zip
+            description: 'Handler for calls to resource path : /user/{proxy+}'
+            enableCORS: true
+            environment: {}
+            handler: lambda.handler
+            hashcode: vJKsBivGiUn91XyBI0DnK5TL63adr2C8IUO8Dka5zYs=
+            memorySize: '128'
+            modified: '2018-04-22T03:58:45.679+0000'
+            name: user
+            runtime: nodejs6.10
+            timeout: '3'
+            version: 636JSWTrrKlr.hxRpAvNJlizQLD53bbe
+          '/user/{proxy+}': !com.amazonaws.mobilehub.v0.Function 
+            codeFilename: uploads/user-20180421205750.zip
+            description: 'Handler for calls to resource path : /user/{proxy+}'
+            enableCORS: true
+            environment: {}
+            handler: lambda.handler
+            hashcode: vJKsBivGiUn91XyBI0DnK5TL63adr2C8IUO8Dka5zYs=
+            memorySize: '128'
+            modified: '2018-04-22T03:58:45.679+0000'
+            name: user
+            runtime: nodejs6.10
+            timeout: '3'
+            version: 24l3RL5A2d2PATHlJPLv0CEYxn_0vE9W
+  content-delivery: !com.amazonaws.mobilehub.v0.ContentDelivery 
+    attributes:
+      enabled: true
+      visibility: public-global
+    components:
+      release: !com.amazonaws.mobilehub.v0.Bucket {}
+  database: !com.amazonaws.mobilehub.v0.Database 
+    components:
+      database-nosql: !com.amazonaws.mobilehub.v0.NoSQLDatabase 
+        tables:
+          - !com.amazonaws.mobilehub.v0.NoSQLTable 
+            attributes:
+              firstName: S
+              lastName: S
+              password: S
+              phoneNumber: S
+            hashKeyName: phoneNumber
+            hashKeyType: S
+            rangeKeyName: ''
+            rangeKeyType: ''
+            tableName: ___DYNAMIC_PREFIX___-user
+            tablePrivacy: public
+  mobile-analytics: !com.amazonaws.mobilehub.v0.Pinpoint 
+    components:
+      analytics: !com.amazonaws.mobilehub.v0.PinpointAnalytics {}
+  sign-in: !com.amazonaws.mobilehub.v0.SignIn {}
+name: citrushack-2018-04-21-20-52-25
+region: us-east-1

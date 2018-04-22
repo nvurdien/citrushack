@@ -1,67 +1,78 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
-    AppRegistry,
-    Dimensions,
-    StyleSheet,
+    View,
     Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { RNCamera } from 'react-native-camera';
+    StyleSheet
+} from "react-native";
 
-export default class BadInstagramCloneApp extends Component {
-    render() {
-        return (
-            <View style={styles.container}>
-                <RNCamera
-                    ref={ref => {
-                        this.camera = ref;
-                    }}
-                    style = {styles.preview}
-                    type={RNCamera.Constants.Type.back}
-                    flashMode={RNCamera.Constants.FlashMode.on}
-                    permissionDialogTitle={'Permission to use camera'}
-                    permissionDialogMessage={'We need your permission to use your camera phone'}
-                />
-                <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center',}}>
-                    <TouchableOpacity
-                        onPress={this.takePicture.bind(this)}
-                        style = {styles.capture}
-                    >
-                        <Text style={{fontSize: 14}}> SNAP </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        );
+import { Camera, Permissions } from 'expo'
+
+import { Container, Content, Header, Item, Icon, Input, Button } from 'native-base'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+
+class CameraComponent extends Component {
+
+    state = {
+        hasCameraPermission: null,
+        type: Camera.Constants.Type.back
+    };
+
+    async componentWillMount() {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+        this.setState({ hasCameraPermission: status === 'granted' })
     }
 
-    takePicture = async function() {
-        if (this.camera) {
-            const options = { quality: 0.5, base64: true };
-            const data = await this.camera.takePictureAsync(options);
-            console.log(data.uri);
-        }
+    onSnap = (event) => {
+
     };
+
+    render() {
+        const { hasCameraPermission } = this.state
+
+        if (hasCameraPermission === null) {
+            return <View />
+        }
+        else if (hasCameraPermission === false) {
+            return <Text> No access to camera</Text>
+        }
+        else {
+            return (
+                <View style={{ flex: 1 }}>
+                    <Camera style={{ flex: 1, justifyContent: 'space-between' }} type={this.state.type} >
+
+                        <Header searchBar rounded
+                                style={{
+                                    position: 'absolute', backgroundColor: 'transparent',
+                                    left: 0, top: 0, right: 0, zIndex: 100, alignItems: 'center'
+                                }}
+                        >
+                            <View style={{ flexDirection: 'row', flex: 2, paddingLeft: 20 }}>
+                                <Icon name="ios-menu" style={{ color: 'white', fontWeight: 'bold' }} />
+                            </View>
+                        </Header>
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 10, marginBottom: 15, alignItems: 'flex-end' }}>
+
+
+                            <View style={{ alignItems: 'center' }}>
+                                <MaterialCommunityIcons name="circle-outline"
+                                    style={{color: 'white', fontSize: 100}}
+                                />
+                            </View>
+
+                        </View>
+                    </Camera>
+                </View>
+            )
+        }
+    }
 }
+export default CameraComponent;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
-        backgroundColor: 'black'
-    },
-    preview: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center'
-    },
-    capture: {
-        flex: 0,
-        backgroundColor: '#fff',
-        borderRadius: 5,
-        padding: 15,
-        paddingHorizontal: 20,
-        alignSelf: 'center',
-        margin: 20
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });
