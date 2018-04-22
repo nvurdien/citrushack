@@ -11,6 +11,7 @@ import {
 import { StackNavigator } from 'react-navigation';
 import Splash from './containers/Splash'
 import Login from "./components/Login";
+// import BadInstagramCloneApp from './containers/camera';
 
 
 const Application = StackNavigator({

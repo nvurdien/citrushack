@@ -1,4 +1,3 @@
-'use strict';
 import React, { Component } from 'react';
 import {
     AppRegistry,
@@ -10,7 +9,7 @@ import {
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
-class BadInstagramCloneApp extends Component {
+export default class BadInstagramCloneApp extends Component {
     render() {
         return (
             <View style={styles.container}>
@@ -66,7 +65,3 @@ const styles = StyleSheet.create({
         margin: 20
     }
 });
-
-AppRegistry.registerComponent('BadInstagramCloneApp', () => BadInstagramCloneApp);
-
-export default BadInstagramCloneApp;
