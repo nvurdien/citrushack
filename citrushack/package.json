@@ -5,7 +5,8 @@
   "devDependencies": {
     "react-native-scripts": "1.13.2",
     "jest-expo": "26.0.0",
-    "react-test-renderer": "16.3.0-alpha.1"
+    "react-test-renderer": "16.3.0-alpha.1",
+    "react-navigation": "latest"
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
   "scripts": {
@@ -22,6 +23,6 @@
     "expo": "^26.0.0",
     "react": "16.3.0",
     "react-native": "~0.54.1",
-    "react-native-camera": "git+https://git@github.com/react-native-community/react-native-camera"
+    "react-native-camera": "git+https://git@github.com/react-native-community/react-native-camera.git"
   }
 }
