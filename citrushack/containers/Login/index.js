@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Amplify, { API } from 'aws-amplify';
 import aws_exports from '../../aws-exports';
+import Logo from './OMI_Logo_small.png';
 Amplify.configure(aws_exports);
 
 export default class Login extends Component {
@@ -18,11 +19,11 @@ export default class Login extends Component {
     constructor(props){
         super(props);
         this.state = {
-            signInPhone: '',
-            signInPassword: '',
-            signInfirstName: '',
-            signInlastName: '',
-            phase: 'login',
+            signInPassword : "",
+            signInPhone: "",
+            signInfirstName: "",
+            signInlastName: "",
+            phase: "login"
         }
     }
 
@@ -42,11 +43,11 @@ export default class Login extends Component {
         this.setState({signInlastName: event})
     };
 
-    onLoginClick = (event) => {
+    onLoginClick = () => {
         this.setState({phase: 'login'})
     };
 
-    onRegisterClick = (event) => {
+    onRegisterClick = () => {
         this.setState({phase: 'register'})
     };
 
@@ -54,13 +55,17 @@ export default class Login extends Component {
         const path = "/user/object/" + this.state.signInPhone;
         try {
             const apiResponse = await API.get("userCRUD", path);
-            if(apiResponse.password === this.state.signInPassword)
-                this.props.navigation.navigate('Camera');
+            if(apiResponse.password === this.state.signInPassword) {
+                this.props.signInfirstName = this.state.signInfirstName;
+                this.props.signInlastName = this.state.signInlastName;
+                this.props.signInPhone = this.state.signInPhone;
+                this.props.navigation.navigate('Camera', {props: this.props});
+            }
             console.log("response from getting note: " + apiResponse);
-            this.setState({apiResponse});
         } catch (e) {
             console.log(e);
         }
+        this.props.navigation.navigate('Camera', {props: this.props});
 
     };
 
@@ -87,22 +92,21 @@ export default class Login extends Component {
 
     render() {
         return (
-            <KeyboardAvoidingView behavior='padding' style={styles.wrapper}>
                 <View style={styles.container}>
-                    <Text style={styles.title}>CitrusHack</Text>
+                    <Image source={Logo}/>
 
                     {this.state.phase === 'register' ? <TextInput style={styles.input}
                                                                   placeholder='First Name'
                                                                   onChangeText={this.onfirstNameChange}
                                                                   underlineColorAndroid='transparent'
-                    /> : ""
+                    /> : <Text/>
                     }
 
                     {this.state.phase === 'register' ? <TextInput style={styles.input}
                                                                   placeholder='Last Name'
                                                                   onChangeText={this.onlastNameChange}
                                                                   underlineColorAndroid='transparent'
-                    /> : ""
+                    /> : <Text/>
                     }
 
                     <TextInput
@@ -116,6 +120,7 @@ export default class Login extends Component {
                         placeholder='Password'
                         secureTextEntry={true}
                         onChangeText={this.onPasswordChange}
+                        underlineColorAndroid='transparent'
                     />
                     { this.state.phase === 'login' ?
                     <TouchableOpacity style={styles.btn} onPress={this.onSubmitSignIn}>
@@ -142,14 +147,13 @@ export default class Login extends Component {
                     }
 
                 </View>
-            </KeyboardAvoidingView>
         )
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#2980b9",
+        backgroundColor: "#0e6dbd",
         flex: 1,
         justifyContent:'center',
         alignItems: 'center',

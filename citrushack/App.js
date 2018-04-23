@@ -8,15 +8,70 @@ import {
     View,
     KeyboardAvoidingView
 } from 'react-native';
-import { StackNavigator } from 'react-navigation';
-import Splash from './containers/Splash'
-import Login from "./components/Login";
+import {DrawerNavigator, StackNavigator} from 'react-navigation';
+import Login from "./containers/Login";
 import CameraComponent from "./containers/camera";
+import Profile from './containers/Profile';
+import Tabs from './containers/Tabs';
+import Sidebar from "./components/SideBar";
 
 
-const Application = StackNavigator({
-    Login: { screen: Login},
-    Camera: { screen: CameraComponent }
+const Application = DrawerNavigator({
+    Login: { screen: DrawerNavigator(
+            {
+                Login: { screen: Login},
+                Camera: {
+                    screen: DrawerNavigator(
+                        {
+                            Logout: { screen: Login},
+                            Camera: {
+                                screen: CameraComponent,
+                            },
+                            Profile: { screen: Profile},
+                            Tabs: { screen: Tabs},
+                            SideBar: {screen: Sidebar}
+                        },
+                        {
+                            initialRouteName: 'Camera',
+                        }
+                    ),
+                },
+                Profile: {
+                    screen: DrawerNavigator(
+                        {
+                            Logout: { screen: Login},
+                            Camera: {
+                                screen: CameraComponent,
+                            },
+                            Profile: { screen: Profile},
+                            Tabs: { screen: Tabs},
+                            SideBar: {screen: Sidebar}
+                        },
+                        {
+                            initialRouteName: 'Profile',
+                        }
+                    )},
+                Tabs: {
+                    screen: DrawerNavigator(
+                        {
+                            Logout: { screen: Login},
+                            Camera: {
+                                screen: CameraComponent,
+                            },
+                            Profile: { screen: Profile},
+                            Tabs: { screen: Tabs},
+                            SideBar: {screen: Sidebar}
+                        },
+                        {
+                            initialRouteName: 'Tabs',
+                        }
+                    )}
+            },
+            {
+                initialRouteName: 'Login',
+            }
+         )},
+
     },
     {
         navigationOptions: {
@@ -26,17 +81,12 @@ const Application = StackNavigator({
 );
 
 const initialState = {
-    input: '',
-    imageURL: '',
-    box: [],
-    route: 'start',
     isSignedIn: false,
     user: {
-        id: '',
-        name: '',
-        email: '',
-        entries: 0,
-        joined: '',
+        signInPhone: "",
+        signInfirstName: "",
+        signInlastName: "",
+        phase: "login"
     }
 };
 
@@ -47,6 +97,8 @@ export default class App extends React.Component {
         this.state = initialState
     }
 
+
+
     componentDidMount() {
         this._loadInitialState().done();
     }
@@ -55,7 +107,7 @@ export default class App extends React.Component {
 
         let value = await AsyncStorage.getItem('user');
         if (value !== null){
-            this.props.navigation.navigate('Profile');
+            this.props.navigation.navigate('Camera');
         }
     };
 
@@ -66,64 +118,10 @@ export default class App extends React.Component {
     }
 }
 
-
-// export default class App extends React.Component {
-//
-//     constructor(){
-//         super();
-//         this.state = initialState
-//     }
-//
-//     loadUser = (data) => {
-//         console.log(data);
-//         this.setState({user: {
-//                 id: data.id,
-//                 name: data.name,
-//                 email: data.email,
-//                 entries: data.entries
-//             }
-//         })
-//     };
-//
-//     onRouteChange = (newRoute) => {
-//         if(newRoute === 'signout'){
-//             this.setState(initialState)
-//         }else if(newRoute === 'home'){
-//             this.setState({isSignedIn: true})
-//         }
-//         this.setState({
-//             route: newRoute
-//         })
-//     };
-//
-//     onInputChange = (event) => {
-//         this.setState({
-//             input: event.target.value,
-//         })
-//     };
-//
-//     render() {
-//         const { route } = this.state;
-//         return (
-//             <View style={styles.container}>
-//                 {/*{ route === 'start'*/}
-//                     {/*? <Index onRouteChange={this.onRouteChange}/>*/}
-//                     {/*: ( route === 'signin'*/}
-//                         {/*? <Index/>*/}
-//                         {/*: <Index/>) }*/}
-//                         <Login/>
-//             </View>
-//         )
-//     }
-// }
-
-AppRegistry.registerComponent('App', () => App);
+AppRegistry.registerComponent('Application', () => Application);
 
 const styles = StyleSheet.create({
     container: {
         flex: 1
-    },
-    wrapper: {
-
     }
 });
